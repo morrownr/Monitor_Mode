@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_NAME="start-mon.sh"
-SCRIPT_VERSION="20220219"
+SCRIPT_VERSION="20220408"
 
 
 # Purpose: Start and configure monitor mode on the provided interface
@@ -272,27 +272,27 @@ then
 		for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
 			command kill -18 "${pid}"   # -18 = CONT
 		done
+#		Display interface settings
+		clear
+		echo
+		echo ' --------------------------------'
+		echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
+		echo ' --------------------------------'
+		echo '    WiFi Interface:'
+		echo '             '$iface0
+		echo ' --------------------------------'
+		iface_name=$(iw dev $iface0 info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
+		echo '    name  - ' $iface_name
+		iface_type=$(iw dev $iface0 info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
+		echo '    type  - ' $iface_type
+		iface_state=$(ip addr show $iface0 | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
+		echo '    state - ' $iface_state
+		iface_addr=$(iw dev $iface0 info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
+		echo '    addr  - ' $iface_addr
+		echo ' --------------------------------'
+		echo
+		exit 0
 	fi
-#	Display interface settings
-	clear
-	echo
-	echo ' --------------------------------'
-	echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
-	echo ' --------------------------------'
-	echo '    WiFi Interface:'
-	echo '             '$iface0
-	echo ' --------------------------------'
-	iface_name=$(iw dev $iface0 info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
-	echo '    name  - ' $iface_name
-	iface_type=$(iw dev $iface0 info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
-	echo '    type  - ' $iface_type
-	iface_state=$(ip addr show $iface0 | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
-	echo '    state - ' $iface_state
-	iface_addr=$(iw dev $iface0 info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
-	echo '    addr  - ' $iface_addr
-	echo ' --------------------------------'
-	echo
-	exit 0
 else
 	clear
 	echo
