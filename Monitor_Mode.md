@@ -1,6 +1,6 @@
 -----
 
-2022-02-16
+2022-06-12
 
 ## Monitor Mode
 
@@ -15,9 +15,9 @@ https://github.com/morrownr/88x2bu-20210702
 https://github.com/morrownr/8814au
 ```
 Note: This document and the `start-mon.sh` script will work with
-adapters that use in-kernel drivers but it is not necessary as the use
-of any of the many guides that are available should work fine as the
-in-kernel drivers work in the textbook, standards compliant manner.
+adapters that use in-kernel drivers but it is not necessary as the
+in-kernel drivers are Linux Wireless Standards compliant so any of
+the many guides that are available should work fine
 
 Please submit corrections or additions via Issues.
 
@@ -89,8 +89,8 @@ document.
 
 #### Enter and check monitor mode
 
-A script called `start-mon.sh` is available in the driver directory.
-It will automate much of the following.
+The script called `start-mon.sh` is available to automate
+much of the following.
 
 Usage:
 
