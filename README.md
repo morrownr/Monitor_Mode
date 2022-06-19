@@ -1,5 +1,3 @@
-2022-04-22
-
 # Monitor_Mode
 
 Purpose: Provide information and tools for testing and using monitor mode with Linux.
