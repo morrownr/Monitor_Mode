@@ -1,6 +1,6 @@
 -----
 
-2022-06-12
+2022-10-25
 
 ## Monitor Mode
 
@@ -19,7 +19,7 @@ adapters that use in-kernel drivers but it is not necessary as the
 in-kernel drivers are Linux Wireless Standards compliant so any of
 the many guides that are available should work fine
 
-Please submit corrections or additions via Issues.
+Please submit corrections or additions via PR or message in Issues.
 
 Monitor mode, or RFMON (Radio Frequency MONitor) mode, allows a computer
 with a wireless network interface controller (WNIC) to monitor all
@@ -38,7 +38,6 @@ following:
 ```
 Kali Linux
 Raspberry Pi OS
-Linux Mint
 Ubuntu
 ```
 -----
@@ -65,7 +64,7 @@ sudo rfkill unblock wlan
 
 -----
 
-#### Install aircrack-ng (optional)
+#### Install aircrack-ng (optional but some examples will not work without it)
 ```
 sudo apt install -y aircrack-ng
 ```
@@ -81,9 +80,8 @@ iw dev
 
 #### Information
 
-The wifi interface name `wlan0` is used in this document but you will
-need to substitute the name of your wifi interface while using this
-document.
+The script, `start-mon.sh` , will rename your selected wifi interface
+name to `wlan0mon`. 
 
 -----
 
@@ -139,6 +137,10 @@ Option 1 (the airmon-ng way)
 Note: This option may not work with some driver/adapter combinations
 (I'm looking at you Realtek). If this option does not work, you can
 use Option 2 or the `start-mon.sh` script that was previously mentioned.
+
+Note: Where <wlan0> is used while manually providing commands, you will need
+to substitute your wifi interface name.
+  
 ```
 sudo airmon-ng start <wlan0>
 ```
