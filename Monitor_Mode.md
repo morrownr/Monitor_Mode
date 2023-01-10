@@ -1,6 +1,6 @@
 -----
 
-2022-10-25
+2023-01-09
 
 ## Monitor Mode
 
@@ -14,10 +14,8 @@ https://github.com/morrownr/8821cu-20210118
 https://github.com/morrownr/88x2bu-20210702
 https://github.com/morrownr/8814au
 ```
-Note: This document and the `start-mon.sh` script will work with
-adapters that use in-kernel drivers but it is not necessary as the
-in-kernel drivers are Linux Wireless Standards compliant so any of
-the many guides that are available should work fine
+Note: This document and the `start-mon.sh` script will work well
+with adapters that use in-kernel drivers also.
 
 Please submit corrections or additions via PR or message in Issues.
 
@@ -81,7 +79,7 @@ iw dev
 #### Information
 
 The script, `start-mon.sh` , will rename your selected wifi interface
-name to `wlan0mon`. 
+name to `wlan0mon`.
 
 -----
 
@@ -130,19 +128,19 @@ processes and interface to original settings. This can reduce reboots
 that sometimes might have been needed to reset things to normal operation.
 
 
-#### Change to monitor mode 
+#### Change to monitor mode
 
 Option 1 (the airmon-ng way)
 
-Note: This option may not work with some driver/adapter combinations
-(I'm looking at you Realtek). If this option does not work, you can
-use Option 2 or the `start-mon.sh` script that was previously mentioned.
+Note: This option may not work with some driver/adapter combinations. If
+this option does not work, you can use Option 2 or the `start-mon.sh`
+script that was previously mentioned.
 
-Note: Where <wlan0> is used while manually providing commands, you will need
+Note: Where wlan0mon is used while manually providing commands, you will need
 to substitute your wifi interface name.
-  
+
 ```
-sudo airmon-ng start <wlan0>
+sudo airmon-ng start wlan0mon
 ```
 
 Option 2 (the manual way)
@@ -154,17 +152,17 @@ iw dev
 
 Take the interface down
 ```
-sudo ip link set <wlan0> down
+sudo ip link set wlan0mon down
 ```
 
 Set monitor mode
 ```
-sudo iw <wlan0> set monitor control
+sudo iw wlan0mon set monitor control
 ```
 
 Bring the interface up
 ```
-sudo ip link set <wlan0> up
+sudo ip link set wlan0mon up
 ```
 
 Verify the mode has changed
@@ -178,22 +176,22 @@ iw dev
 
 Option for 5 GHz and 2.4 GHz
 ```
-sudo airodump-ng <wlan0> --band ag
+sudo airodump-ng wlan0mon --band ag
 ```
 Option for 5 GHz only
 ```
-sudo airodump-ng <wlan0> --band a
+sudo airodump-ng wlan0mon --band a
 ```
 Option for 2.4 GHz only
 ```
-sudo airodump-ng <wlan0> --band g
+sudo airodump-ng wlan0mon --band g
 ```
 Set the channel of your choice
 ```
-sudo iw dev <wlan0> set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
+sudo iw dev wlan0mon set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
 ```
 ```
-sudo aireplay-ng --test <wlan0>
+sudo aireplay-ng --test wlan0mon
 ```
 
 -----
@@ -202,26 +200,26 @@ sudo aireplay-ng --test <wlan0>
 
 Option for 5 GHz and 2.4 GHz
 ```
-sudo airodump-ng <wlan0> --band ag
+sudo airodump-ng wlan0mon --band ag
 ```
 Option for 5 GHz only
 ```
-sudo airodump-ng <wlan0> --band a
+sudo airodump-ng wlan0mon --band a
 ```
 Option for 2.4 GHz only
 ```
-sudo airodump-ng <wlan0> --band g
+sudo airodump-ng wlan0mon --band g
 ```
 ```
-sudo airodump-ng <wlan0> --bssid <routerMAC> --channel <channel of router>
+sudo airodump-ng wlan0mon --bssid <routerMAC> --channel <channel of router>
 ```
 Option for 5 GHz:
 ```
-sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> <wlan0> -D
+sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> wlan0mon -D
 ```
 Option for 2.4 GHz:
 ```
-sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> <wlan0>
+sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> wlan0mon
 ```
 
 -----
@@ -235,17 +233,17 @@ iw dev
 
 Take the wifi interface down
 ```
-sudo ip link set <wlan0> down
+sudo ip link set wlan0mon down
 ```
 
 Set managed mode
 ```
-sudo iw <wlan0> set type managed
+sudo iw wlan0mon set type managed
 ```
 
 Bring the wifi interface up
 ```
-sudo ip link set <wlan0> up
+sudo ip link set wlan0mon up
 ```
 
 Verify the wifi interface name and mode has changed
@@ -264,22 +262,22 @@ iw dev
 
 Take the wifi interface down
 ```
-sudo ip link set dev <wlan0> down
+sudo ip link set dev wlan0mon down
 ```
 
 Change the MAC address
 ```
-sudo ip link set dev <wlan0> address <new mac address>
+sudo ip link set dev wlan0mon address <new mac address>
 ```
 
 Set monitor mode
 ```
-sudo iw <wlan0> set monitor control
+sudo iw wlan0mon set monitor control
 ```
 
 Bring the wifi interface up
 ```
-sudo ip link set dev <wlan0> up
+sudo ip link set dev wlan0mon up
 ```
 
 Verify the wifi interface name, MAC address and mode has changed
@@ -291,7 +289,7 @@ iw dev
 
 ### Change txpower
 ```
-sudo iw dev <wlan0> set txpower fixed 1600
+sudo iw dev wlan0mon set txpower fixed 1600
 ```
 
 Note:  1600 = 16 dBm
