@@ -1,6 +1,6 @@
 # Monitor_Mode
 
-Purpose: Provide information and tools for testing and using monitor mode with Linux.
+Purpose: Provide information and tools for starting and testing monitor mode with Linux.
 
 The `Monitor_Mode.md` document and the `start-mon.sh` script were initially started due to the challenges involved with using Realtek's out-of-kernel USB WiFi adapter drivers in monitor mode with Linux. While the in-kernel Mediatek drivers work in a textbook, standards compliant manner, the Realtek drivers do not which results in a lot of frustration.
 
