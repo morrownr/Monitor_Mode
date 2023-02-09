@@ -112,7 +112,11 @@ if [ "$RESULT" = "0" ]; then
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
 		read -p " What addr do you want? ( e.g. 12:34:56:78:90:ab ) " iface_addr
-#		need code to ID bad addresses
+		re="^([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}$"
+		while [[ ! "$iface_addr" =~ $re ]]
+		do
+			read -p " Invalid addr, try again: " iface_addr
+		done
 		ip link set dev "$iface0" address "$iface_addr"
 	fi
 
