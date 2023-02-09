@@ -34,6 +34,7 @@ Note: This document and the `start-mon.sh` script have been tested on the
 following:
 
 ```
+Fedora
 Kali Linux
 Raspberry Pi OS
 Ubuntu
@@ -46,11 +47,17 @@ Ubuntu
 
 
 #### Update system
+
+##### Debian/Ubuntu
 ```
 sudo apt update
 ```
 ```
 sudo apt upgrade
+```
+##### Fedora
+```
+sudo dnf upgrade --refresh
 ```
 
 -----
@@ -112,7 +119,7 @@ advantages over killing them.
 
 Advantage 1: When killing the very clever interfering processes, you may
 find that interfering processes are able to spawn new processes that will
-continue to interfer. Stopping the interfering processes does not seem to
+continue to interfere. Stopping the interfering processes does not seem to
 trigger the spawning of new processes.
 
 Advantage 2: If you use more than one wifi adapter/card in the system,
