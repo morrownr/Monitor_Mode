@@ -34,6 +34,7 @@ Note: This document and the `start-mon.sh` script have been tested on the
 following:
 
 ```
+Fedora
 Kali Linux
 Raspberry Pi OS
 Ubuntu
@@ -46,11 +47,17 @@ Ubuntu
 
 
 #### Update system
+
+##### Debian/Ubuntu
 ```
 sudo apt update
 ```
 ```
 sudo apt upgrade
+```
+##### Fedora
+```
+sudo dnf upgrade --refresh
 ```
 
 -----
