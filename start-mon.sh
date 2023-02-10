@@ -213,6 +213,7 @@ if [ "$RESULT" = "0" ]; then
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
 		echo " Note: Some USB WiFi adapters will not allow the txpw to be set."
+		echo "       Be careful because some adapters will let you increase power to the point that you will burn the adapter."
 		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " iface_txpw
 		iw dev $iface0mon set txpower fixed "$iface_txpw"
 	fi
