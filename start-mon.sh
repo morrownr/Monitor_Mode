@@ -115,9 +115,18 @@ if [ "$RESULT" = "0" ]; then
 		re="^([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}$"
 		while [[ ! "$iface_addr" =~ $re ]]
 		do
-			read -p " Invalid addr, try again: " iface_addr
+			read -p " Invalid addr format, try again: " iface_addr
 		done
 		ip link set dev "$iface0" address "$iface_addr"
+		while [[ $? -ne 0 ]]
+		do
+			read -p " Setting addr failed, try again: " iface_addr
+			while [[ ! "$iface_addr" =~ $re ]]
+			do
+				read -p " Invalid addr format, try again: " iface_addr
+			done
+			ip link set dev "$iface0" address "$iface_addr"
+		done
 	fi
 
 
