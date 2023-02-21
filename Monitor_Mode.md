@@ -1,37 +1,31 @@
------
-
-2023-01-09
-
 ## Monitor Mode
 
-Purpose: Provide information and tools for testing and using monitor
-mode with the following Realtek drivers:
+Purpose: Provide information and tools for starting and using monitor mode with
+the following Realtek drivers:
 
 ```
-https://github.com/morrownr/8812au-20210629
-https://github.com/morrownr/8821au-20210708
-https://github.com/morrownr/8821cu-20210118
-https://github.com/morrownr/88x2bu-20210702
+https://github.com/morrownr/8812au
+https://github.com/morrownr/8821au
+https://github.com/morrownr/8821cu
+https://github.com/morrownr/88x2bu
 https://github.com/morrownr/8814au
 ```
-Note: This document and the `start-mon.sh` script will work well
-with adapters that use in-kernel drivers also.
+Note: This document and the provided scripts will work well with adapters
+that use in-kernel drivers also.
 
-Please submit corrections or additions via PR or message in Issues.
+Please submit corrections or enhancements via PR or message in Issues.
 
-Monitor mode, or RFMON (Radio Frequency MONitor) mode, allows a computer
-with a wireless network interface controller (WNIC) to monitor all
-traffic received on a wireless channel. Monitor mode allows packets to
-be captured without having to associate with an access point or ad hoc
-network first. Monitor mode only applies to wireless networks, while
-promiscuous mode can be used on both wired and wireless networks.
-Monitor mode is one of the eight modes that 802.11 wireless cards and
-adapters can operate in: Master (acting as an access point), Managed
-(client, also known as station), Ad hoc, Repeater, Mesh, Wi-Fi Direct,
+Monitor mode, or RFMON (Radio Frequency MONitor) mode, allows a computer with a
+wireless network interface controller (WNIC) to monitor all traffic received on
+a wireless channel. Monitor mode allows packets to be captured without having
+to associate with an access point or ad hoc network first. Monitor mode only
+applies to wireless networks, while promiscuous mode can be used on both wired
+and wireless networks. Monitor mode is one of the eight modes that 802.11
+wireless cards and adapters can operate in: Master (acting as an access point),
+Managed (client, also known as station), Ad hoc, Repeater, Mesh, Wi-Fi Direct,
 TDLS and Monitor mode.
 
-Note: This document and the `start-mon.sh` script have been tested on the
-following:
+Note: This document and the scripts have been tested on the following:
 
 ```
 Fedora
@@ -41,7 +35,7 @@ Ubuntu
 ```
 -----
 
-## Steps to start/test monitor mode
+## Steps to start/use monitor mode
 
 #### Install USB WiFi adapter and driver per instructions.
 
@@ -55,6 +49,7 @@ sudo apt update
 ```
 sudo apt upgrade
 ```
+
 ##### Fedora
 ```
 sudo dnf upgrade --refresh
@@ -62,14 +57,14 @@ sudo dnf upgrade --refresh
 
 -----
 
-#### Ensure WiFi radio is not blocked
+#### Ensure WiFi radio is not blocked (turn Airplane mode off)
 ```
 sudo rfkill unblock wlan
 ```
 
 -----
 
-#### Install aircrack-ng (optional but some examples will not work without it)
+#### Install aircrack-ng (optional but some examples use it)
 ```
 sudo apt install -y aircrack-ng
 ```
@@ -85,8 +80,17 @@ iw dev
 
 #### Information
 
-The script, `start-mon.sh` , will rename your selected wifi interface
-name to `wlan0mon`.
+The script, `start-mon.sh` , can stop and restart the processes that can
+interfer with monitor mode operation abd it can change the following characteristics
+of your selected wifi interface:
+
+mode
+MAC address
+channel
+txpw
+
+The script, `stop-procs.sh` , can stop and restart the processes that can
+interfer with monitor mode operation.
 
 -----
 
@@ -98,7 +102,7 @@ much of the following.
 Usage:
 
 ```
-sudo ./start-mon.sh [interface:wlan0]
+sudo ./start-mon.sh [interface]
 ```
 
 Note: If you want to do things manually, continue below.
@@ -147,7 +151,7 @@ Note: Where wlan0mon is used while manually providing commands, you will need
 to substitute your wifi interface name.
 
 ```
-sudo airmon-ng start wlan0mon
+sudo airmon-ng start <wlan0>
 ```
 
 Option 2 (the manual way)
@@ -159,17 +163,17 @@ iw dev
 
 Take the interface down
 ```
-sudo ip link set wlan0mon down
+sudo ip link set <wlan0> down
 ```
 
 Set monitor mode
 ```
-sudo iw wlan0mon set monitor control
+sudo iw <wlan0> set monitor none
 ```
 
 Bring the interface up
 ```
-sudo ip link set wlan0mon up
+sudo ip link set <wlan0> up
 ```
 
 Verify the mode has changed
@@ -183,22 +187,22 @@ iw dev
 
 Option for 5 GHz and 2.4 GHz
 ```
-sudo airodump-ng wlan0mon --band ag
+sudo airodump-ng <wlan0> --band ag
 ```
 Option for 5 GHz only
 ```
-sudo airodump-ng wlan0mon --band a
+sudo airodump-ng <wlan0> --band a
 ```
 Option for 2.4 GHz only
 ```
-sudo airodump-ng wlan0mon --band g
+sudo airodump-ng <wlan0> --band g
 ```
 Set the channel of your choice
 ```
-sudo iw dev wlan0mon set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
+sudo iw dev <wlan0> set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
 ```
 ```
-sudo aireplay-ng --test wlan0mon
+sudo aireplay-ng --test <wlan0>
 ```
 
 -----
@@ -207,26 +211,26 @@ sudo aireplay-ng --test wlan0mon
 
 Option for 5 GHz and 2.4 GHz
 ```
-sudo airodump-ng wlan0mon --band ag
+sudo airodump-ng <wlan0> --band ag
 ```
 Option for 5 GHz only
 ```
-sudo airodump-ng wlan0mon --band a
+sudo airodump-ng <wlan0> --band a
 ```
 Option for 2.4 GHz only
 ```
-sudo airodump-ng wlan0mon --band g
+sudo airodump-ng <wlan0> --band g
 ```
 ```
-sudo airodump-ng wlan0mon --bssid <routerMAC> --channel <channel of router>
+sudo airodump-ng <wlan0> --bssid <routerMAC> --channel <channel of router>
 ```
 Option for 5 GHz:
 ```
-sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> wlan0mon -D
+sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> <wlan0> -D
 ```
 Option for 2.4 GHz:
 ```
-sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> wlan0mon
+sudo aireplay-ng --deauth 0 -c <deviceMAC> -a <routerMAC> <wlan0>
 ```
 
 -----
@@ -240,17 +244,17 @@ iw dev
 
 Take the wifi interface down
 ```
-sudo ip link set wlan0mon down
+sudo ip link set <wlan0> down
 ```
 
 Set managed mode
 ```
-sudo iw wlan0mon set type managed
+sudo iw <wlan0> set type managed
 ```
 
 Bring the wifi interface up
 ```
-sudo ip link set wlan0mon up
+sudo ip link set <wlan0> up
 ```
 
 Verify the wifi interface name and mode has changed
@@ -269,22 +273,22 @@ iw dev
 
 Take the wifi interface down
 ```
-sudo ip link set dev wlan0mon down
+sudo ip link set dev <wlan0> down
 ```
 
 Change the MAC address
 ```
-sudo ip link set dev wlan0mon address <new mac address>
+sudo ip link set dev <wlan0> address <new mac address>
 ```
 
 Set monitor mode
 ```
-sudo iw wlan0mon set monitor control
+sudo iw <wlan0> set monitor control
 ```
 
 Bring the wifi interface up
 ```
-sudo ip link set dev wlan0mon up
+sudo ip link set dev <wlan0> up
 ```
 
 Verify the wifi interface name, MAC address and mode has changed
@@ -296,7 +300,7 @@ iw dev
 
 ### Change txpower
 ```
-sudo iw dev wlan0mon set txpower fixed 1600
+sudo iw dev <wlan0> set txpower fixed 1600
 ```
 
 Note:  1600 = 16 dBm

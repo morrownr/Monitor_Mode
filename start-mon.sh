@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_NAME="start-mon.sh"
-SCRIPT_VERSION="20230206"
+SCRIPT_VERSION="20230220"
 
 
 # Purpose: Start and configure monitor mode on the provided wifi interface
@@ -11,12 +11,14 @@ SCRIPT_VERSION="20230206"
 
 clear
 
+
 # check to ensure sudo was used to start the script
 if [ "$(id -u)" -ne 0 ]; then
 	echo "You must run this script with superuser (root) privileges."
 	echo "Try: \"sudo ./${SCRIPT_NAME}\""
 	exit 1
 fi
+
 
 # check to ensure iw is installed
 if ! command -v iw >/dev/null 2>&1; then
@@ -26,6 +28,7 @@ if ! command -v iw >/dev/null 2>&1; then
 	exit 1
 fi
 
+
 # check to ensure ip is installed
 if ! command -v ip >/dev/null 2>&1; then
 	echo "A required package is not installed."
@@ -34,30 +37,20 @@ if ! command -v ip >/dev/null 2>&1; then
 	exit 1
 fi
 
-# check to ensure rfkill is installed
-if ! command -v rfkill >/dev/null 2>&1; then
-	echo "A required package is not installed."
-	echo "Please install the following package: rfkill"
-	echo "Once the package is installed, please run \"sudo ./${SCRIPT_NAME}\""
-	exit 1
-fi
-
-# ensure WiFi radio is not blocked
-sudo rfkill unblock wlan
 
 # assign default monitor mode interface name
-iface0mon='wlan0mon'
+iface0mon="wlan0mon"
 
 # assign default channel
-chan=6
+chan="6"
 
 # activate option to set automatic (1) or manual (2) interface mode
 #
 # option 1: if you only have one wlan interface (automatic detection)
-#iface0=`iw dev | grep 'Interface' | sed 's/Interface //'`
+#iface0=$(iw dev | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
 #
-# option 2: if you have more than one wlan interface (default wlan0)
-iface0=${1:-wlan0}
+# option 2: if you have more than one wlan interface
+iface0=${1}
 
 
 # set iface0 down
@@ -71,7 +64,8 @@ if [ "$RESULT" = "0" ]; then
 #	match="$(ps -A -o comm= | grep ${PROCESSES} | grep -v grep | wc -l)"
 	badProcs=$(ps -A -o pid=PID -o comm=Name | grep "${PROCESSES}\|PID")
 	for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
-		command kill -19 "${pid}"   # -19 = STOP
+		command kill -19 "${pid}"
+#				(-19 = STOP)
 	done
 	clear
 	echo
@@ -83,6 +77,7 @@ if [ "$RESULT" = "0" ]; then
 	echo ' to a normal state at the end of this script.'
 	echo
 	read -p " Press any key to continue... " -n 1 -r
+
 
 #	display interface settings
 	clear
@@ -145,11 +140,18 @@ if [ "$RESULT" = "0" ]; then
 
 
 #	rename interface
-	ip link set dev "$iface0" name $iface0mon
+#	info: Realtek out-of-kernel drivers have a bug when trying to rename interfaces
+#	info: Realtek out-of-kernel drivers do not handle deleting or adding interface names
+#	info: In-kernel drivers do not have the above problems
+#	ip link set dev "$iface0" name $iface0mon
+
+#	do not rename interface
+	iface0mon="$iface0"
 
 
 #	bring the interface up
-	ip link set dev $iface0mon up
+	ip link set dev "$iface0mon" up
+
 
 #	display interface settings
 	clear
@@ -160,36 +162,38 @@ if [ "$RESULT" = "0" ]; then
 	echo '    WiFi Interface:'
 	echo '             '"$iface0"
 	echo ' --------------------------------'
-	iface_name=$(iw dev $iface0mon info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
+	iface_name=$(iw dev "$iface0mon" info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
 	echo '    name  - ' "$iface_name"
-	iface_type=$(iw dev $iface0mon info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
+	iface_type=$(iw dev "$iface0mon" info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
 	echo '    type  - ' "$iface_type"
-	iface_state=$(ip addr show $iface0mon | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
+	iface_state=$(ip addr show "$iface0mon" | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
 	echo '    state - ' "$iface_state"
-	iface_addr=$(iw dev $iface0mon info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
+	iface_addr=$(iw dev "$iface0mon" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
 	echo '    addr  - ' "$iface_addr"
-	iface_chan=$(iw dev $iface0mon info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
+	iface_chan=$(iw dev "$iface0mon" info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
 	echo '    chan  - ' "$iface_chan"
 	echo ' --------------------------------'
 	echo
 
+
 #	set channel
+#	Documentation:
+#	iw dev <devname> set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
+#	iw dev <devname> set freq <freq> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
+#	iw dev <devname> set freq <control freq> [5|10|20|40|80|80+80|160] [<center1_freq> [<center2_freq>]]
 	read -p " Do you want to set the channel? [y/N] " -n 1 -r
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
 		read -p " What channel do you want to set? " chan
-#		Documentation:
-#		iw dev <devname> set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
-#		iw dev <devname> set freq <freq> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
-#		iw dev <devname> set freq <control freq> [5|10|20|40|80|80+80|160] [<center1_freq> [<center2_freq>]]
 #		Select one or modify as required:
 		iw dev $iface0mon set channel "$chan"
 #		iw dev $iface0mon set channel $chan HT40-
 #		iw dev $iface0mon set channel $chan 80MHz
-#		To test if channel was set correctly:
-#		aireplay-ng --test <wlan0>
+	else
+		iw dev $iface0mon set channel "$chan"
 	fi
+
 
 #	display interface settings
 	clear
@@ -221,8 +225,9 @@ if [ "$RESULT" = "0" ]; then
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
-		echo " Note: Some USB WiFi adapters will not allow the txpw to be set."
-		echo "       Be careful because some adapters will let you increase power to the point that you will burn the adapter."
+		echo " Notes: Some USB WiFi adapters will not allow the txpw to be set."
+		echo "        Be careful tp not increase power to the point that you can burn the adapter."
+		echo
 		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " iface_txpw
 		iw dev $iface0mon set txpower fixed "$iface_txpw"
 	fi
@@ -254,6 +259,7 @@ if [ "$RESULT" = "0" ]; then
 	echo ' Note: DORMANT = interface is up '
 	echo '       but inactive.             '
 	echo
+
 
 #	interface ready
 	echo " The Interface is now ready for Monitor Mode use."
@@ -325,7 +331,7 @@ else
 	clear
 	echo
 	echo " ERROR: Please provide an existing interface as parameter!"
-	echo -e " Usage: $ sudo ./$SCRIPT_NAME [interface:wlan0]"
+	echo -e " Usage: $ sudo ./$SCRIPT_NAME [interface]"
 	echo " Tip:   $ iw dev"
 	echo
 	exit 1
