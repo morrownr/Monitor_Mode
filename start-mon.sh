@@ -106,19 +106,24 @@ if [ "$RESULT" = "0" ]; then
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
-		read -p " What addr do you want? ( e.g. 12:34:56:78:90:ab ) " iface_addr
+		read -p " What addr do you want? ( e.g. 12:34:56:78:90:ab ) " -r iface_addr
 		re="^([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}$"
 		while [[ ! "$iface_addr" =~ $re ]]
 		do
-			read -p " Invalid addr format, try again: " iface_addr
+			read -p " Invalid addr format, try again: " -r iface_addr
 		done
+# example for work on the next section
+#	while ! make mytarget;
+#	do
+#		echo "Build failed"
+#	done
 		ip link set dev "$iface0" address "$iface_addr"
 		while [[ $? -ne 0 ]]
 		do
-			read -p " Setting addr failed, try again: " iface_addr
+			read -p " Setting addr failed, try again: " -r iface_addr
 			while [[ ! "$iface_addr" =~ $re ]]
 			do
-				read -p " Invalid addr format, try again: " iface_addr
+				read -p " Invalid addr format, try again: " -r iface_addr
 			done
 			ip link set dev "$iface0" address "$iface_addr"
 		done
@@ -139,19 +144,21 @@ if [ "$RESULT" = "0" ]; then
 	iw dev "$iface0" set monitor none
 
 
-#	rename interface
+#	rename interface to default
 #	info: Realtek out-of-kernel drivers have a bug when trying to rename interfaces
 #	info: Realtek out-of-kernel drivers do not handle deleting or adding interface names
 #	info: In-kernel drivers do not have the above problems
 #	ip link set dev "$iface0" name $iface0mon
-
-#	do not rename interface
+#
+#	do not rename interface to default
 	iface0mon="$iface0"
 
 
 #	bring the interface up
 	ip link set dev "$iface0mon" up
 
+#	set channel to default
+	iw dev "$iface0mon" set channel "$chan"
 
 #	display interface settings
 	clear
@@ -185,13 +192,11 @@ if [ "$RESULT" = "0" ]; then
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
-		read -p " What channel do you want to set? " chan
+		read -p " What channel do you want to set? " -r chan
 #		Select one or modify as required:
-		iw dev $iface0mon set channel "$chan"
+		iw dev "$iface0mon" set channel "$chan" HT20
 #		iw dev $iface0mon set channel $chan HT40-
 #		iw dev $iface0mon set channel $chan 80MHz
-	else
-		iw dev $iface0mon set channel "$chan"
 	fi
 
 
@@ -204,17 +209,17 @@ if [ "$RESULT" = "0" ]; then
 	echo '    WiFi Interface:'
 	echo '             '"$iface0"
 	echo ' --------------------------------'
-	iface_name=$(iw dev $iface0mon info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
+	iface_name=$(iw dev "$iface0mon" info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
 	echo '    name  - ' "$iface_name"
-	iface_type=$(iw dev $iface0mon info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
+	iface_type=$(iw dev "$iface0mon" info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
 	echo '    type  - ' "$iface_type"
-	iface_state=$(ip addr show $iface0mon | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
+	iface_state=$(ip addr show "$iface0mon" | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
 	echo '    state - ' "$iface_state"
-	iface_addr=$(iw dev $iface0mon info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
+	iface_addr=$(iw dev "$iface0mon" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
 	echo '    addr  - ' "$iface_addr"
-	iface_chan=$(iw dev $iface0mon info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
+	iface_chan=$(iw dev "$iface0mon" info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
 	echo '    chan  - ' "$iface_chan"
-	iface_txpw=$(iw dev $iface0mon info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
+	iface_txpw=$(iw dev "$iface0mon" info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
 	echo '    txpw  - ' "$iface_txpw"
 	echo ' --------------------------------'
 	echo
@@ -228,8 +233,8 @@ if [ "$RESULT" = "0" ]; then
 		echo " Notes: Some USB WiFi adapters will not allow the txpw to be set."
 		echo "        Be careful tp not increase power to the point that you can burn the adapter."
 		echo
-		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " iface_txpw
-		iw dev $iface0mon set txpower fixed "$iface_txpw"
+		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " -r iface_txpw
+		iw dev "$iface0mon" set txpower fixed "$iface_txpw"
 	fi
 
 
@@ -242,17 +247,17 @@ if [ "$RESULT" = "0" ]; then
 	echo '    WiFi Interface:'
 	echo '             '"$iface0"
 	echo ' --------------------------------'
-	iface_name=$(iw dev $iface0mon info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
+	iface_name=$(iw dev "$iface0mon" info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
 	echo '    name  - ' "$iface_name"
-	iface_type=$(iw dev $iface0mon info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
+	iface_type=$(iw dev "$iface0mon" info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
 	echo '    type  - ' "$iface_type"
-	iface_state=$(ip addr show $iface0mon | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
+	iface_state=$(ip addr show "$iface0mon" | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
 	echo '    state - ' "$iface_state"
-	iface_addr=$(iw dev $iface0mon info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
+	iface_addr=$(iw dev "$iface0mon" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
 	echo '    addr  - ' "$iface_addr"
-	iface_chan=$(iw dev $iface0mon info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
+	iface_chan=$(iw dev "$iface0mon" info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
 	echo '    chan  - ' "$iface_chan"
-	iface_txpw=$(iw dev $iface0mon info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
+	iface_txpw=$(iw dev "$iface0mon" info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
 	echo '    txpw  - ' "$iface_txpw"
 	echo ' --------------------------------'
 	echo
@@ -285,22 +290,22 @@ if [ "$RESULT" = "0" ]; then
 		echo '    WiFi Interface:'
 		echo '             '"$iface0"
 		echo ' --------------------------------'
-		iface_name=$(iw dev $iface0mon info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
+		iface_name=$(iw dev "$iface0mon" info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
 		echo '    name  - ' "$iface_name"
-		iface_type=$(iw dev $iface0mon info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
+		iface_type=$(iw dev "$iface0mon" info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
 		echo '    type  - ' "$iface_type"
-		iface_state=$(ip addr show $iface0mon | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
+		iface_state=$(ip addr show "$iface0mon" | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
 		echo '    state - ' "$iface_state"
-		iface_addr=$(iw dev $iface0mon info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
+		iface_addr=$(iw dev "$iface0mon" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
 		echo '    addr  - ' "$iface_addr"
 		echo ' --------------------------------'
 		echo
 		exit 0
 	else
-		ip link set dev $iface0mon down
-		ip link set dev $iface0mon address "$iface_addr_orig"
-		iw $iface0mon set type managed
-		ip link set dev $iface0mon name "$iface0"
+		ip link set dev "$iface0mon" down
+		ip link set dev "$iface0mon" address "$iface_addr_orig"
+		iw "$iface0mon" set type managed
+		ip link set dev "$iface0mon" name "$iface0"
 		ip link set dev "$iface0" up
 #		enable interfering processes
 		for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
