@@ -149,7 +149,7 @@ Note: This option may not work with some driver/adapter combinations. If
 this option does not work, you can use Option 2 or the `start-mon.sh`
 script that was previously mentioned.
 
-Note: Where wlan0mon is used while manually providing commands, you will need
+Note: Where <wlan0> is used while manually providing commands, you will need
 to substitute your wifi interface name.
 
 ```
