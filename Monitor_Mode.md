@@ -81,13 +81,15 @@ iw dev
 #### Information
 
 The script, `start-mon.sh` , can stop and restart the processes that can
-interfer with monitor mode operation abd it can change the following characteristics
+interfer with monitor mode operation and it can change the following characteristics
 of your selected wifi interface:
 
+```
 mode
 MAC address
 channel
 txpw
+```
 
 The script, `stop-procs.sh` , can stop and restart the processes that can
 interfer with monitor mode operation.
