@@ -1,12 +1,12 @@
 #!/bin/bash
 
 SCRIPT_NAME="start-mon.sh"
-SCRIPT_VERSION="20230220"
+SCRIPT_VERSION="20230305"
 
 
 # Purpose: Start and configure monitor mode on the provided wifi interface
 
-# Usage: $ sudo ./start-mon.sh [interface:wlan0]
+# Usage: $ sudo ./start-mon.sh [interface]
 
 
 clear
@@ -38,19 +38,26 @@ if ! command -v ip >/dev/null 2>&1; then
 fi
 
 
-# assign default monitor mode interface name
-iface0mon="wlan0mon"
-
-# assign default channel
-chan="6"
-
-# activate option to set automatic (1) or manual (2) interface mode
+# select option to set automatic (1) or manual (2) interface name capture mode
 #
 # option 1: if you only have one wlan interface (automatic detection)
 #iface0=$(iw dev | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
 #
 # option 2: if you have more than one wlan interface
 iface0=${1}
+
+
+# assign monitor mode interface name
+if [ "$iface0" = "wlan0" ]; then
+	iface0mon="wlan0mon"
+fi
+if [ "$iface0" = "wlan1" ]; then
+	iface0mon="wlan1mon"
+fi
+
+
+# assign default channel
+chan="6"
 
 
 # set iface0 down
@@ -79,7 +86,7 @@ if [ "$RESULT" = "0" ]; then
 	read -p " Press any key to continue... " -n 1 -r
 
 
-#	display interface settings
+# display interface settings
 	clear
 	echo
 	echo ' --------------------------------'
@@ -100,7 +107,7 @@ if [ "$RESULT" = "0" ]; then
 	echo
 
 
-#	set addr (has to be done before renaming the interface)
+# set addr (has to be done before renaming the interface)
 	iface_addr_orig=$iface_addr
 	read -p " Do you want to set a new addr? [y/N] " -n 1 -r
 	echo
@@ -112,11 +119,6 @@ if [ "$RESULT" = "0" ]; then
 		do
 			read -p " Invalid addr format, try again: " -r iface_addr
 		done
-# example for work on the next section
-#	while ! make mytarget;
-#	do
-#		echo "Build failed"
-#	done
 		ip link set dev "$iface0" address "$iface_addr"
 		while [[ $? -ne 0 ]]
 		do
@@ -130,7 +132,7 @@ if [ "$RESULT" = "0" ]; then
 	fi
 
 
-#	set monitor mode
+# set monitor mode
 #	iw dev <devname> set monitor <flag>
 #		Valid monitor flags are:
 #		none:     no special flags
@@ -144,23 +146,29 @@ if [ "$RESULT" = "0" ]; then
 	iw dev "$iface0" set monitor none
 
 
-#	rename interface to default
-#	info: Realtek out-of-kernel drivers have a bug when trying to rename interfaces
-#	info: Realtek out-of-kernel drivers do not handle deleting or adding interface names
-#	info: In-kernel drivers do not have the above problems
-#	ip link set dev "$iface0" name $iface0mon
+# interface renaming options
+#	info:	Realtek out-of-kernel drivers have a bug when trying to rename
+#		interfaces on some systems. Use option 2 in this case.
+#	info:	Realtek out-of-kernel drivers do not handle deleting or adding
+#		interface names. There is no virtual interface support.
+#	info:	In-kernel drivers do not have the above problems.
 #
-#	do not rename interface to default
-	iface0mon="$iface0"
+# option 1: rename interface to the value in $iface0mon
+	ip link set dev "$iface0" name $iface0mon
+#
+# option 2: keep the original system interface name
+#	iface0mon="$iface0"
 
 
-#	bring the interface up
+# bring the interface up
 	ip link set dev "$iface0mon" up
 
-#	set channel to default
+
+# set channel to default
 	iw dev "$iface0mon" set channel "$chan"
 
-#	display interface settings
+
+# display interface settings
 	clear
 	echo
 	echo ' --------------------------------'
@@ -183,7 +191,7 @@ if [ "$RESULT" = "0" ]; then
 	echo
 
 
-#	set channel
+# set channel
 #	Documentation:
 #	iw dev <devname> set channel <channel> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
 #	iw dev <devname> set freq <freq> [NOHT|HT20|HT40+|HT40-|5MHz|10MHz|80MHz]
@@ -193,14 +201,14 @@ if [ "$RESULT" = "0" ]; then
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
 		read -p " What channel do you want to set? " -r chan
-#		Select one or modify as required:
+#	Select one or modify as required:
 		iw dev "$iface0mon" set channel "$chan" HT20
-#		iw dev $iface0mon set channel $chan HT40-
-#		iw dev $iface0mon set channel $chan 80MHz
+#		iw dev "$iface0mon" set channel "$chan" HT40-
+#		iw dev "$iface0mon" set channel "$chan" 80MHz
 	fi
 
 
-#	display interface settings
+# display interface settings
 	clear
 	echo
 	echo ' --------------------------------'
@@ -225,20 +233,20 @@ if [ "$RESULT" = "0" ]; then
 	echo
 
 
-#	set txpw
+# set txpw
 	read -p " Do you want to set the txpower? [y/N] " -n 1 -r
 	echo
 	if [[ $REPLY =~ ^[Yy]$ ]]
 	then
 		echo " Notes: Some USB WiFi adapters will not allow the txpw to be set."
-		echo "        Be careful tp not increase power to the point that you can burn the adapter."
+		echo "        Be careful to not increase power to the point that you overheat the adapter."
 		echo
 		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " -r iface_txpw
 		iw dev "$iface0mon" set txpower fixed "$iface_txpw"
 	fi
 
 
-#	display interface settings
+# display interface settings
 	clear
 	echo
 	echo ' --------------------------------'
@@ -261,27 +269,26 @@ if [ "$RESULT" = "0" ]; then
 	echo '    txpw  - ' "$iface_txpw"
 	echo ' --------------------------------'
 	echo
-	echo ' Note: DORMANT = interface is up '
-	echo '       but inactive.             '
+	echo ' DORMANT = up but inactive.'
 	echo
 
 
-#	interface ready
-	echo " The Interface is now ready for Monitor Mode use."
+# interface ready
+	echo " Ready for Monitor Mode use."
 	echo
 	echo ' You can place this terminal in'
 	echo ' the background while you run any'
 	echo ' applications you wish to run.'
 	echo
-	read -p " Press any key to continue... " -n 1 -r
+	read -p " Press any key to exit... " -n 1 -r
 	echo
 
 
-#	return the adapter to original settings or not
+# return the adapter to original settings or not
 	read -p " Do you want to return the adapter to original settings? [Y/n] " -n 1 -r
 	if [[ $REPLY =~ ^[Nn]$ ]]
 	then
-#		display interface settings
+#	display interface settings
 		clear
 		echo
 		echo ' --------------------------------'
@@ -307,11 +314,11 @@ if [ "$RESULT" = "0" ]; then
 		iw "$iface0mon" set type managed
 		ip link set dev "$iface0mon" name "$iface0"
 		ip link set dev "$iface0" up
-#		enable interfering processes
+#	enable interfering processes
 		for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
 			command kill -18 "${pid}"   # -18 = CONT
 		done
-#		display interface settings
+#	display interface settings
 		clear
 		echo
 		echo ' --------------------------------'
