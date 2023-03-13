@@ -20,7 +20,7 @@ jobs:
   ubuntu_22_04:
     runs-on: ubuntu-22.04
 
-    name: Ubuntu 22.04 shellcheck
+    name: Shellcheck CI
 
     steps:
       - uses: actions/checkout@v3
