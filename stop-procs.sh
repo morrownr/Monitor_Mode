@@ -22,7 +22,9 @@ echo ": ${SCRIPT_NAME} v${SCRIPT_VERSION}"
 
 #	disable interfering processes
 PROCESSES="wpa_action\|wpa_supplicant\|wpa_cli\|dhclient\|ifplugd\|dhcdbd\|dhcpcd\|udhcpc\|NetworkManager\|knetworkmanager\|avahi-autoipd\|avahi-daemon\|wlassistant\|wifibox\|net_applet\|wicd-daemon\|wicd-client\|iwd"
+# shellcheck disable=SC2009
 badProcs=$(ps -A -o pid=PID -o comm=Name | grep "${PROCESSES}\|PID")
+# shellcheck disable=SC2009
 for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
 	command kill -19 "${pid}"
 #				(-19 = STOP)
@@ -41,6 +43,7 @@ case "$REPLY" in
 esac
 
 #	enable interfering processes
+# shellcheck disable=SC2009
 for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
 	command kill -18 "${pid}"
 #				(-18 = CONT)

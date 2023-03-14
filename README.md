@@ -1,5 +1,7 @@
 # Monitor_Mode
 
+[![Shellcheck CI](https://github.com/morrownr/Monitor_Mode/actions/workflows/shellcheck.yml/badge.svg?event=push)](https://github.com/morrownr/Monitor_Mode/actions/workflows/shellcheck.yml)
+
 Purpose: Provide information and tools for starting and using monitor mode with Linux.
 
 The `Monitor_Mode.md` document and the scripts were initially started due to the challenges involved with using Realtek's out-of-kernel USB WiFi adapter drivers in monitor mode with Linux. While the in-kernel Mediatek drivers work in a textbook, standards compliant manner, the Realtek drivers do not which results in a lot of frustration.

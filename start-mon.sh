@@ -69,7 +69,9 @@ if [ "$RESULT" = "0" ]; then
 	PROCESSES="wpa_action\|wpa_supplicant\|wpa_cli\|dhclient\|ifplugd\|dhcdbd\|dhcpcd\|udhcpc\|NetworkManager\|knetworkmanager\|avahi-autoipd\|avahi-daemon\|wlassistant\|wifibox\|net_applet\|wicd-daemon\|wicd-client\|iwd"
 #	unset match
 #	match="$(ps -A -o comm= | grep ${PROCESSES} | grep -v grep | wc -l)"
+	# shellcheck disable=SC2009
 	badProcs=$(ps -A -o pid=PID -o comm=Name | grep "${PROCESSES}\|PID")
+	# shellcheck disable=SC2009
 	for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
 		command kill -19 "${pid}"
 #				(-19 = STOP)
@@ -120,6 +122,7 @@ if [ "$RESULT" = "0" ]; then
 			read -p " Invalid addr format, try again: " -r iface_addr
 		done
 		ip link set dev "$iface0" address "$iface_addr"
+		# shellcheck disable=SC2181
 		while [[ $? -ne 0 ]]
 		do
 			read -p " Setting addr failed, try again: " -r iface_addr
@@ -315,6 +318,7 @@ if [ "$RESULT" = "0" ]; then
 		ip link set dev "$iface0mon" name "$iface0"
 		ip link set dev "$iface0" up
 #	enable interfering processes
+		# shellcheck disable=SC2009
 		for pid in $(ps -A -o pid= -o comm= | grep ${PROCESSES} | awk '{print $1}'); do
 			command kill -18 "${pid}"   # -18 = CONT
 		done
