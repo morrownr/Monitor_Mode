@@ -1,6 +1,7 @@
 # Monitor_Mode
 
 [![Codespell CI](https://github.com/morrownr/Monitor_Mode/actions/workflows/codespell.yml/badge.svg?event=push)](https://github.com/morrownr/Monitor_Mode/actions/workflows/codespell.yml)
+[![Markdown link CI](https://github.com/morrownr/Monitor_Mode/actions/workflows/markdown-link.yml/badge.svg?event=push)](https://github.com/morrownr/Monitor_Mode/actions/workflows/markdown-link.yml)
 [![Shellcheck CI](https://github.com/morrownr/Monitor_Mode/actions/workflows/shellcheck.yml/badge.svg?event=push)](https://github.com/morrownr/Monitor_Mode/actions/workflows/shellcheck.yml)
 
 Purpose: Provide information and tools for starting and using monitor mode with Linux.
