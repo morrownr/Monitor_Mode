@@ -48,12 +48,7 @@ iface0=${1}
 
 
 # assign monitor mode interface name
-if [ "$iface0" = "wlan0" ]; then
-	iface0mon="wlan0mon"
-fi
-if [ "$iface0" = "wlan1" ]; then
-	iface0mon="wlan1mon"
-fi
+iface0mon="${iface0}mon"
 
 
 # assign default channel
