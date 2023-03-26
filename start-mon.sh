@@ -47,15 +47,6 @@ fi
 iface0=${1}
 
 
-# assign monitor mode interface name
-if [ "$iface0" = "wlan0" ]; then
-	iface0mon="wlan0mon"
-fi
-if [ "$iface0" = "wlan1" ]; then
-	iface0mon="wlan1mon"
-fi
-
-
 # assign default channel
 chan="6"
 
@@ -149,18 +140,24 @@ if [ "$RESULT" = "0" ]; then
 	iw dev "$iface0" set monitor none
 
 
-# interface renaming options
-#	info:	Realtek out-of-kernel drivers have a bug when trying to rename
-#		interfaces on some systems. Use option 2 in this case.
+# assign monitor mode interface name
+#	info:	Realtek out-of-kernel drivers have problems when trying to rename
+#		interfaces on some systems.
+#	info:	The above may be corrected by turning off the following:
+#		PREDICTABLE NETWORK INTERFACE NAMES
+#	more info: https://wiki.debian.org/NetworkInterfaceNames#initrd
 #	info:	Realtek out-of-kernel drivers do not handle deleting or adding
 #		interface names. There is no virtual interface support.
 #	info:	In-kernel drivers do not have the above problems.
 #
-# option 1: rename interface to the value in $iface0mon
+	iface0mon="$iface0"
+	if [ "iface0mon" = "wlan0" ]; then
+		iface0mon="wlan0mon"
+	fi
+	if [ "iface0mon" = "wlan1" ]; then
+		iface0mon="wlan1mon"
+	fi
 	ip link set dev "$iface0" name $iface0mon
-#
-# option 2: keep the original system interface name
-#	iface0mon="$iface0"
 
 
 # bring the interface up
