@@ -152,7 +152,7 @@ if [ "$RESULT" = "0" ]; then
 #	info:	In-kernel drivers do not have the above problems.
 #
 # option 1: rename interface to the value in $iface0mon
-	ip link set dev "$iface0" name $iface0mon
+	ip link set dev "$iface0" name "$iface0mon"
 #
 # option 2: keep the original system interface name
 #	iface0mon="$iface0"
