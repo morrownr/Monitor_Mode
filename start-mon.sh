@@ -151,10 +151,10 @@ if [ "$RESULT" = "0" ]; then
 #	info:	In-kernel drivers do not have the above problems.
 #
 	iface0mon="$iface0"
-	if [ "iface0mon" = "wlan0" ]; then
+	if [ "$iface0mon" = "wlan0" ]; then
 		iface0mon="wlan0mon"
 	fi
-	if [ "iface0mon" = "wlan1" ]; then
+	if [ "$iface0mon" = "wlan1" ]; then
 		iface0mon="wlan1mon"
 	fi
 	ip link set dev "$iface0" name $iface0mon
