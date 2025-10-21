@@ -1,19 +1,17 @@
+2025-10-09
+
 ## Monitor Mode
 
-Purpose: Provide information and tools for starting and using monitor mode with
-the following Realtek drivers:
+Purpose: Provide information and tools for starting and using monitor mode
+on Linux
 
-```
-https://github.com/morrownr/8812au
-https://github.com/morrownr/8821au
-https://github.com/morrownr/8821cu
-https://github.com/morrownr/88x2bu
-https://github.com/morrownr/8814au
-```
-Note: This document and the provided scripts will work well with adapters
-that use in-kernel drivers also.
+Note: Linux wireless capability has been undergoing a dramatic modernization
+since around 2018. This modernization has been accelerating greatly since
+around 2022. My estimate is that we will have fully modern (mac80211) drivers
+in the Linux kernel for ALL commonly used USB WiFi adapter chipsets by
+mid-2026.
 
-Please submit corrections or enhancements via PR or message in Issues.
+Your corrections or enhancements via PR or message in Issues are welcome.
 
 Monitor mode, or RFMON (Radio Frequency MONitor) mode, allows a computer with a
 wireless network interface controller (WNIC) to monitor all traffic received on
@@ -25,14 +23,9 @@ wireless cards and adapters can operate in: Master (acting as an access point),
 Managed (client, also known as station), Ad hoc, Repeater, Mesh, Wi-Fi Direct,
 TDLS and Monitor mode.
 
-Note: This document and the scripts have been tested on the following:
 
-```
-Fedora
-Kali Linux
-Raspberry Pi OS
-Ubuntu
-```
+## This document is undergoing a modernization 
+
 -----
 
 ## Steps to start/use monitor mode

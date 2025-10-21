@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_NAME="start-mon.sh"
-SCRIPT_VERSION="20230305"
+SCRIPT_VERSION="20250616"
 
 
 # Purpose: Start and configure monitor mode on the provided wifi interface
@@ -28,6 +28,13 @@ if ! command -v iw >/dev/null 2>&1; then
 	exit 1
 fi
 
+# check to ensure ethtool is installed
+if ! command -v ethtool >/dev/null 2>&1; then
+	echo "A required package is not installed."
+	echo "Please install the following package: ethtool"
+	echo "Once the package is installed, please run \"sudo ./${SCRIPT_NAME}\""
+	exit 1
+fi
 
 # check to ensure ip is installed
 if ! command -v ip >/dev/null 2>&1; then
@@ -96,6 +103,9 @@ if [ "$RESULT" = "0" ]; then
 	echo '    state - ' "$iface_state"
 	iface_addr=$(iw dev "$iface0" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
 	echo '    addr  - ' "$iface_addr"
+# the following displays the device permanent address
+	iface_hwaddr=$(ethtool -P "$iface_name" | grep 'Permanent address: ' | sed 's/Permanent address: //')
+	echo '    hwaddr- ' "$iface_hwaddr"
 	echo ' --------------------------------'
 	echo
 
@@ -157,7 +167,7 @@ if [ "$RESULT" = "0" ]; then
 	if [ "$iface0mon" = "wlan1" ]; then
 		iface0mon="wlan1mon"
 	fi
-	ip link set dev "$iface0" name $iface0mon
+	ip link set dev "$iface0" name "$iface0mon"
 
 
 # bring the interface up
