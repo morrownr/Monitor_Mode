@@ -1,4 +1,4 @@
-2025-10-09
+2025-10-22
 
 ## Monitor Mode
 
@@ -28,14 +28,14 @@ TDLS and Monitor mode.
 
 -----
 
-## Steps to start/use monitor mode
+## Manual Steps to start/use monitor mode
 
 #### Install USB WiFi adapter and driver per instructions.
 
 
 #### Update system
 
-##### Debian/Ubuntu
+##### Debian compatible systems
 ```
 sudo apt update
 ```
@@ -58,6 +58,8 @@ sudo rfkill unblock wlan
 -----
 
 #### Install aircrack-ng (optional but some examples use it)
+
+Debian compatible systems
 ```
 sudo apt install -y aircrack-ng
 ```
@@ -65,8 +67,10 @@ sudo apt install -y aircrack-ng
 -----
 
 #### Check wifi interface information
+
+Debian
 ```
-iw dev
+sudo iw dev
 ```
 
 -----
@@ -81,7 +85,6 @@ of your selected wifi interface:
 mode
 MAC address
 channel
-txpw
 ```
 
 The script, `stop-procs.sh` , can stop and restart the processes that can
@@ -91,8 +94,8 @@ interfer with monitor mode operation.
 
 #### Enter and check monitor mode
 
-The script called `start-mon.sh` is available to automate
-much of the following.
+The script called `start-mon.sh` is available to automate the following
+manual steps.
 
 Usage:
 
@@ -294,6 +297,8 @@ iw dev
 -----
 
 ### Change txpower
+
+Note: Many model adapters do not support changing txpower
 ```
 sudo iw dev <wlan0> set txpower fixed 1600
 ```

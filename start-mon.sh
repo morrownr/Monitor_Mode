@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_NAME="start-mon.sh"
-SCRIPT_VERSION="20250616"
+SCRIPT_VERSION="20251022"
 
 
 # Purpose: Start and configure monitor mode on the provided wifi interface
@@ -76,6 +76,11 @@ if [ "$RESULT" = "0" ]; then
 	done
 	clear
 	echo
+	echo ' --------------------------------'
+#	echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
+	echo "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
+	echo ' --------------------------------'
+	echo
 	echo ' The following processes have been stopped:'
 	echo
 	echo "${badProcs}"
@@ -90,7 +95,8 @@ if [ "$RESULT" = "0" ]; then
 	clear
 	echo
 	echo ' --------------------------------'
-	echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
+#	echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
+	echo "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
 	echo ' --------------------------------'
 	echo '    WiFi Interface:'
 	echo '             '"$iface0"
@@ -152,13 +158,15 @@ if [ "$RESULT" = "0" ]; then
 
 # assign monitor mode interface name
 #	info:	Realtek out-of-kernel drivers have problems when trying to rename
-#		interfaces on some systems.
+#			interfaces on some systems.
 #	info:	The above may be corrected by turning off the following:
-#		PREDICTABLE NETWORK INTERFACE NAMES
-#	more info: https://wiki.debian.org/NetworkInterfaceNames#initrd
+#			PREDICTABLE NETWORK INTERFACE NAMES
+#			more info: https://wiki.debian.org/NetworkInterfaceNames#initrd
 #	info:	Realtek out-of-kernel drivers do not handle deleting or adding
-#		interface names. There is no virtual interface support.
+#			interface names. There is no virtual interface support.
 #	info:	In-kernel drivers do not have the above problems.
+#	info:	The interface name will not be renamed if
+#			PREDICTABLE NETWORK INTERFACE NAMES is active.
 #
 	iface0mon="$iface0"
 	if [ "$iface0mon" = "wlan0" ]; then
@@ -237,48 +245,51 @@ if [ "$RESULT" = "0" ]; then
 	echo '    addr  - ' "$iface_addr"
 	iface_chan=$(iw dev "$iface0mon" info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
 	echo '    chan  - ' "$iface_chan"
-	iface_txpw=$(iw dev "$iface0mon" info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
-	echo '    txpw  - ' "$iface_txpw"
+#	iface_txpw=$(iw dev "$iface0mon" info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
+#	echo '    txpw  - ' "$iface_txpw"
 	echo ' --------------------------------'
 	echo
 
 
+#	setting txpw has been inactivated because support is rare in this day in time
 # set txpw
-	read -p " Do you want to set the txpower? [y/N] " -n 1 -r
-	echo
-	if [[ $REPLY =~ ^[Yy]$ ]]
-	then
-		echo " Notes: Some USB WiFi adapters will not allow the txpw to be set."
-		echo "        Be careful to not increase power to the point that you overheat the adapter."
-		echo
-		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " -r iface_txpw
-		iw dev "$iface0mon" set txpower fixed "$iface_txpw"
-	fi
+#	read -p " Do you want to set the txpower? [y/N] " -n 1 -r
+#	echo
+#	if [[ $REPLY =~ ^[Yy]$ ]]
+#	then
+#		echo " Notes: Some USB WiFi adapters will not allow the txpw to be set."
+#		echo "        Be careful to not increase power to the point that you overheat the adapter."
+#		echo
+#		read -p " What txpw setting do you want to attempt to set? ( e.g. 2300 = 23 dBm ) " -r iface_txpw
+#		iw dev "$iface0mon" set txpower fixed "$iface_txpw"
+#	fi
 
 
 # display interface settings
-	clear
-	echo
-	echo ' --------------------------------'
-	echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
-	echo ' --------------------------------'
-	echo '    WiFi Interface:'
-	echo '             '"$iface0"
-	echo ' --------------------------------'
-	iface_name=$(iw dev "$iface0mon" info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
-	echo '    name  - ' "$iface_name"
-	iface_type=$(iw dev "$iface0mon" info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
-	echo '    type  - ' "$iface_type"
-	iface_state=$(ip addr show "$iface0mon" | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
-	echo '    state - ' "$iface_state"
-	iface_addr=$(iw dev "$iface0mon" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
-	echo '    addr  - ' "$iface_addr"
-	iface_chan=$(iw dev "$iface0mon" info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
-	echo '    chan  - ' "$iface_chan"
-	iface_txpw=$(iw dev "$iface0mon" info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
-	echo '    txpw  - ' "$iface_txpw"
-	echo ' --------------------------------'
-	echo
+#	clear
+#	echo
+#	echo ' --------------------------------'
+#	echo -e "    ${SCRIPT_NAME} ${SCRIPT_VERSION}"
+#	echo ' --------------------------------'
+#	echo '    WiFi Interface:'
+#	echo '             '"$iface0"
+#	echo ' --------------------------------'
+#	iface_name=$(iw dev "$iface0mon" info | grep 'Interface' | sed 's/Interface //' | sed -e 's/^[ \t]*//')
+#	echo '    name  - ' "$iface_name"
+#	iface_type=$(iw dev "$iface0mon" info | grep 'type' | sed 's/type //' | sed -e 's/^[ \t]*//')
+#	echo '    type  - ' "$iface_type"
+#	iface_state=$(ip addr show "$iface0mon" | grep 'state' | sed 's/.*state \([^ ]*\)[ ]*.*/\1/')
+#	echo '    state - ' "$iface_state"
+#	iface_addr=$(iw dev "$iface0mon" info | grep 'addr' | sed 's/addr //' | sed -e 's/^[ \t]*//')
+#	echo '    addr  - ' "$iface_addr"
+#	iface_chan=$(iw dev "$iface0mon" info | grep 'channel' | sed 's/channel //' | sed -e 's/^[ \t]*//')
+#	echo '    chan  - ' "$iface_chan"
+#	iface_txpw=$(iw dev "$iface0mon" info | grep 'txpower' | sed 's/txpower //' | sed -e 's/^[ \t]*//')
+#	echo '    txpw  - ' "$iface_txpw"
+#	echo ' --------------------------------'
+#	echo
+
+
 	echo ' DORMANT = up but inactive.'
 	echo
 
